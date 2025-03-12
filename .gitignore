@@ -1,0 +1,111 @@
+# .NET build artifacts
+bin/
+obj/
+*.dll
+*.pdb
+*.exe
+*.user
+*.suo
+*.cache
+*.log
+*.vs
+.vs/
+_ReSharper*/
+*.ReSharper*
+*.DotSettings.user
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# NuGet packages
+*.nupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+
+.idea/
+*.sln.iml
+
+# Build files
+out/
+*.nuget
+
+# User-specific
+*.vscode
+*.rsuser
+
+# Logs and temp files
+*.tmp
+
+# Rider and Resharper files
+.idea/
+
+
+# Dotnet dependency files
+packages/
+project.lock.json
+
+# Docker files
+docker-compose.override.yml
+*.tar
+
+# System files
+Thumbs.db
+.DS_Store
+
+# Rider workspace
+.idea/
+.idea_modules/
+.idea/workspace.xml
+.idea/assetWizardSettings.xml
+.idea/sonarlint/
+.idea/httpRequests/
+
+# Rider coverage and test results
+coverage/
+*.coverage
+*.coveragexml
+TestResults/
+
+# Local environment files
+.env
+*.env.local
+
+
+# Logs directory
+logs/

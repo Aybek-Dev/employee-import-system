@@ -1,0 +1,44 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Стили для кнопок редактирования и удаления */
+.dx-link.dx-link-edit {
+  color: #ffc107 !important; /* Желтый цвет для кнопки редактирования */
+  font-weight: bold;
+}
+
+.dx-link.dx-link-delete {
+  color: #dc3545 !important; /* Красный цвет для кнопки удаления */
+  font-weight: bold;
+}
+
+/* Стили для кнопок при наведении */
+.dx-link.dx-link-edit:hover {
+  color: #e0a800 !important; /* Темно-желтый при наведении */
+  text-decoration: none;
+}
+
+.dx-link.dx-link-delete:hover {
+  color: #bd2130 !important; /* Темно-красный при наведении */
+  text-decoration: none;
+}

@@ -1,0 +1,21 @@
+﻿version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Synel_Software_Development_111
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - employee-network
+
+networks:
+  employee-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:

@@ -1,0 +1,36 @@
+@model EmployeeImport.Web.Models.ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="mb-0">Error</h2>
+                </div>
+                <div class="card-body">
+                    <h4 class="text-danger">An error occurred while processing your request.</h4>
+                    
+                    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                    {
+                        <div class="alert alert-danger mt-3">
+                            <p>@Model.ErrorMessage</p>
+                        </div>
+                    }
+                    
+                    @if (Model.ShowRequestId)
+                    {
+                        <p class="text-muted mt-3">
+                            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                        </p>
+                    }
+                </div>
+                <div class="card-footer">
+                    <a href="/" class="btn btn-primary">Return to Home</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,217 @@
+@model EmployeeImport.Web.Models.ImportViewModel
+@{
+    ViewData["Title"] = "Employee Import";
+}
+
+<div class="container">
+    <h2>Employee Data Import</h2>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="importForm" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="input-group">
+                    <input type="file" class="form-control" id="file" name="File" accept=".csv">
+                    <button type="submit" class="btn btn-primary">Import</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Block for displaying import results -->
+    <div id="importResult" class="alert alert-success mb-4" style="display: none;">
+        <span id="importResultMessage"></span>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" id="searchBox" class="form-control" placeholder="Search...">
+                    <button id="searchButton" class="btn btn-outline-secondary">Search</button>
+                </div>
+            </div>
+            <div id="employeesGrid"></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function() {
+            // Initialize DataGrid
+            var dataGrid = $("#employeesGrid").dxDataGrid({
+                dataSource: @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.Employees)),
+                keyExpr: "id",
+                showBorders: true,
+                paging: { pageSize: 10 },
+                pager: {
+                    showPageSizeSelector: true,
+                    allowedPageSizes: [5, 10, 20, 50],
+                    showInfo: true
+                },
+                searchPanel: {
+                    visible: true,
+                    width: 240,
+                    placeholder: "Search..."
+                },
+                sorting: {
+                    mode: "multiple",
+                    defaultSortOrder: "asc"
+                },
+                filterRow: {
+                    visible: true
+                },
+                headerFilter: {
+                    visible: true
+                },
+                editing: {
+                    mode: "row",
+                    allowUpdating: true,
+                    allowDeleting: true,
+                    confirmDelete: true,
+                    texts: {
+                        confirmDeleteMessage: "Are you sure you want to delete this employee?"
+                    },
+                    useIcons: true
+                },
+                columns: [
+                    { dataField: "payrollNumber", caption: "Payroll Number" },
+                    { dataField: "forenames", caption: "First Name" },
+                    { 
+                        dataField: "surname", 
+                        caption: "Last Name",
+                        sortOrder: "asc", // Default sort
+                        sortIndex: 0
+                    },
+                    { dataField: "dateOfBirth", caption: "Date of Birth", dataType: "date" },
+                    { dataField: "telephone", caption: "Telephone" },
+                    { dataField: "mobile", caption: "Mobile" },
+                    { dataField: "address", caption: "Address" },
+                    { dataField: "address2", caption: "Address 2" },
+                    { dataField: "postcode", caption: "Postal Code" },
+                    { dataField: "emailHome", caption: "Email" },
+                    { dataField: "startDate", caption: "Start Date", dataType: "date" }
+                ],
+                onRowUpdating: function(e) {
+                    var data = Object.assign({}, e.oldData, e.newData);
+                    data.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
+                    
+                    $.ajax({
+                        url: '@Url.Action("Update")',
+                        type: 'POST',
+                        data: data,
+                        success: function(response) {
+                            if (response.success) {
+                                dataGrid.option("dataSource", response.data);
+                                showMessage("Employee data successfully updated", "success");
+                            } else {
+                                showMessage(response.message || "Error updating data", "danger");
+                                e.cancel = true;
+                            }
+                        },
+                        error: function() {
+                            showMessage("Error updating data", "danger");
+                            e.cancel = true;
+                        }
+                    });
+                    
+                    e.cancel = true; // Cancel standard update as we're doing it via AJAX
+                },
+                onRowRemoving: function(e) {
+                    var data = {
+                        id: e.key,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    };
+                    
+                    $.ajax({
+                        url: '@Url.Action("Delete")',
+                        type: 'POST',
+                        data: data,
+                        success: function(response) {
+                            if (response.success) {
+                                dataGrid.option("dataSource", response.data);
+                                showMessage("Employee successfully deleted", "success");
+                            } else {
+                                showMessage(response.message || "Error deleting employee", "danger");
+                                e.cancel = true;
+                            }
+                        },
+                        error: function() {
+                            showMessage("Error deleting employee", "danger");
+                            e.cancel = true;
+                        }
+                    });
+                    
+                    e.cancel = true; // Cancel standard deletion as we're doing it via AJAX
+                }
+            }).dxDataGrid("instance");
+            
+            // Import form handling
+            $('#importForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                var formData = new FormData(this);
+                
+                $.ajax({
+                    url: '@Url.Action("Import")',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        if (response.success) {
+                            dataGrid.option("dataSource", response.data);
+                            showMessage("Import completed successfully. Records processed: " + response.successCount, "success");
+                            $('#file').val('');
+                        } else {
+                            showMessage(response.message || "Error during import", "danger");
+                        }
+                    },
+                    error: function() {
+                        showMessage("Error during import", "danger");
+                    }
+                });
+            });
+            
+            // Function for displaying messages
+            function showMessage(message, type) {
+                var resultBlock = $("#importResult");
+                resultBlock.removeClass("alert-success alert-danger")
+                           .addClass("alert-" + type)
+                           .show();
+                $("#importResultMessage").text(message);
+                
+                // Automatically hide the message after 5 seconds
+                setTimeout(function() {
+                    resultBlock.fadeOut();
+                }, 5000);
+            }
+            
+            // Search handling
+            $("#searchButton").on("click", function() {
+                var searchText = $("#searchBox").val();
+                
+                $.ajax({
+                    url: '@Url.Action("GetEmployees")',
+                    type: 'GET',
+                    data: { searchString: searchText },
+                    success: function(data) {
+                        dataGrid.option("dataSource", data);
+                    },
+                    error: function() {
+                        showMessage("Error during search", "danger");
+                    }
+                });
+            });
+            
+            // Handle Enter key in search box
+            $("#searchBox").on("keypress", function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $("#searchButton").click();
+                }
+            });
+        });
+    </script>
+} 
